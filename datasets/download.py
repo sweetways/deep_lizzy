@@ -26,7 +26,7 @@ DATASET_YEAR_DICT = {
         },
     },
     "COCO":{
-
+        
     },
 }
 
@@ -68,8 +68,6 @@ def main():
     dataset_name = "VOC"
     year = "2007"
     download_dataset(dataset_name, year)
-
-
 
 
 if __name__ == '__main__':
