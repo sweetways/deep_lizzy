@@ -47,7 +47,7 @@ def read_config(config_file):
 def main():
     #read_config('config.ini')
     model = faster_rcnn.get_model(21)
-    train(model)
+    train.train(model)
 
 
 if __name__ == "__main__":

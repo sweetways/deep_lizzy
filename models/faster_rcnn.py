@@ -5,8 +5,12 @@ from torchvision.models.detection.rpn import AnchorGenerator
 
 def get_model(num_classes):
     # 加载预训练的模型进行分类预测
-    backbone = torchvision.models.resnet101(pretrained=True).features
-    
+    backbone = torchvision.models.resnet50(pretrained=True)
+
+# Remove the last layer (the classifier)
+    modules = list(backbone.children())[:-1]
+    backbone = torch.nn.Sequential(*modules)
+        
     # FasterRCNN需要知道骨干网络的输出通道数量。对于mobilenet_v2，它是1280，所以我们需要在这里添加它
     backbone.out_channels = 1280
     

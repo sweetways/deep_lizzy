@@ -7,13 +7,18 @@ from torchvision import transforms
 from torchvision.datasets import ImageFolder
 from torch import optim, nn
 
-
+from utils import data_utils
 from utils.logger import Logger
 
 def train(model, num_epochs=100, batch_size=64, learning_rate=0.001):
+    config_path = "./datasets/voc_datasets.yaml"
+
     # 设置设备
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
-
+    # 获取模型的类名并创建一个目录来保存训练断点
+    model_name = model.__class__.__name__
+    checkpoint_dir = f'logs/{model_name}'
+    os.makedirs(checkpoint_dir, exist_ok=True)
     # 创建 Logger 对象
     logger = Logger(f'{checkpoint_dir}/train.log', logging.INFO, 'train').get_log()
 
@@ -23,8 +28,8 @@ def train(model, num_epochs=100, batch_size=64, learning_rate=0.001):
         transforms.ToTensor(),
         transforms.Normalize(mean=[0.485, 0.456, 0.406], std=[0.229, 0.224, 0.225])
     ])
-    train_dataset = ImageFolder('path_to_your_train_dataset', transform=transform)
-    val_dataset = ImageFolder('path_to_your_val_dataset', transform=transform)
+    
+    train_dataset, val_dataset = data_utils.load_datasets(config_path, transform)
     train_loader = DataLoader(train_dataset, batch_size=batch_size, shuffle=True)
     val_loader = DataLoader(val_dataset, batch_size=batch_size, shuffle=False)
 
@@ -35,10 +40,7 @@ def train(model, num_epochs=100, batch_size=64, learning_rate=0.001):
     optimizer = optim.Adam(model.parameters(), lr=learning_rate)
     criterion = nn.CrossEntropyLoss()
 
-    # 获取模型的类名并创建一个目录来保存训练断点
-    model_name = model.__class__.__name__
-    checkpoint_dir = f'logs/{model_name}'
-    os.makedirs(checkpoint_dir, exist_ok=True)
+    
 
     # 训练循环
     for epoch in range(num_epochs):
